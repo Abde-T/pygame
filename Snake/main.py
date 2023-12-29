@@ -11,7 +11,7 @@ class SNAKE:
         self.direction = Vector2(0, 0)
         self.new_block = False
         self.load_images()
-        
+
     @staticmethod
     def invert_image_colors(image):
         pixels = pygame.PixelArray(image)
@@ -307,8 +307,6 @@ cell_number = 20
 screen = pygame.display.set_mode((cell_number * cell_size, cell_number * cell_size))
 clock = pygame.time.Clock()
 apple = pygame.image.load('snake/Graphics/apple.png').convert_alpha()
-grass = pygame.image.load('snake/Graphics/grass.png').convert_alpha()
-grass1 = pygame.image.load('snake/Graphics/grass2.png').convert_alpha()
 game_font = pygame.font.Font(None,25)
 
 SCREEN_UPDATE = pygame.USEREVENT
