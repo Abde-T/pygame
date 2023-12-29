@@ -1,77 +1,44 @@
-import pygame, sys, random
+import pygame
+import sys
+import random
 from pygame.math import Vector2
 
 
 class SNAKE:
     def __init__(self, is_ai=False):
         self.is_ai = is_ai
-        self.body = self.set_initial_body()
-        self.direction = Vector2(0,0)
+        self.body = [Vector2(18, 5), Vector2(18, 4), Vector2(18, 3)] if is_ai else [Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)]
+        self.direction = Vector2(0, 0)
         self.new_block = False
-        # Load images
         self.load_images()
-
-    def set_initial_body(self):
-        if self.is_ai:
-            # Define initial body positions for AI snake
-            return [Vector2(18, 5), Vector2(18, 4), Vector2(18, 3)]
-        else:
-            # Define initial body positions for player-controlled snake
-            return [Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)]
-    
+        
+    @staticmethod
     def invert_image_colors(image):
-            # Convert the image to a pixel array
         pixels = pygame.PixelArray(image)
-            
-            # Invert colors by looping through each pixel
         for x in range(image.get_width()):
             for y in range(image.get_height()):
                 r, g, b, a = image.get_at((x, y))
                 inverted_color = (255 - r, 255 - g, 255 - b, a)
                 pixels[x, y] = inverted_color
-            
-            # Delete the pixel array to unlock the surface
         del pixels
-            
         return image
-
+    
     def load_images(self):
-        if self.is_ai:
-            self.head_up_ai = self.invert_image_colors(pygame.image.load('Snake/Graphics/head_up.png').convert_alpha())
-            self.head_down_ai = self.invert_image_colors(pygame.image.load('Snake/Graphics/head_down.png').convert_alpha())
-            self.head_right_ai = self.invert_image_colors(pygame.image.load('Snake/Graphics/head_right.png').convert_alpha())
-            self.head_left_ai = self.invert_image_colors(pygame.image.load('Snake/Graphics/head_left.png').convert_alpha())
+        paths = [
+            'head_up', 'head_down', 'head_right', 'head_left',
+            'tail_up', 'tail_down', 'tail_right', 'tail_left',
+            'body_vertical', 'body_horizontal',
+            'body_topright', 'body_topleft', 'body_bottomright', 'body_bottomleft'
+        ]
 
-            self.tail_up_ai = self.invert_image_colors(pygame.image.load('Snake/Graphics/tail_up.png').convert_alpha())
-            self.tail_down_ai = self.invert_image_colors(pygame.image.load('Snake/Graphics/tail_down.png').convert_alpha())
-            self.tail_right_ai = self.invert_image_colors(pygame.image.load('Snake/Graphics/tail_right.png').convert_alpha())
-            self.tail_left_ai = self.invert_image_colors(pygame.image.load('Snake/Graphics/tail_left.png').convert_alpha())
+        for path in paths:
+            # Load the image for the player-controlled snake
+            setattr(self, path, pygame.image.load(f'Snake/Graphics/{path}.png').convert_alpha())
 
-            self.body_vertical_ai = self.invert_image_colors(pygame.image.load('Snake/Graphics/body_vertical.png').convert_alpha())
-            self.body_horizontal_ai = self.invert_image_colors(pygame.image.load('Snake/Graphics/body_horizontal.png').convert_alpha())
-
-            self.body_topright_ai = self.invert_image_colors(pygame.image.load('Snake/Graphics/body_topright.png').convert_alpha())
-            self.body_topleft_ai = self.invert_image_colors(pygame.image.load('Snake/Graphics/body_topleft.png').convert_alpha())
-            self.body_bottomright_ai = self.invert_image_colors(pygame.image.load('Snake/Graphics/body_bottomright.png').convert_alpha())
-            self.body_bottomleft_ai = self.invert_image_colors(pygame.image.load('Snake/Graphics/body_bottomleft.png').convert_alpha())
-        else:
-            self.head_up = pygame.image.load('Snake/Graphics/head_up.png').convert_alpha()
-            self.head_down = pygame.image.load('Snake/Graphics/head_down.png').convert_alpha()
-            self.head_right = pygame.image.load('Snake/Graphics/head_right.png').convert_alpha()
-            self.head_left = pygame.image.load('Snake/Graphics/head_left.png').convert_alpha()
-
-            self.tail_up = pygame.image.load('Snake/Graphics/tail_up.png').convert_alpha()
-            self.tail_down = pygame.image.load('Snake/Graphics/tail_down.png').convert_alpha()
-            self.tail_right = pygame.image.load('Snake/Graphics/tail_right.png').convert_alpha()
-            self.tail_left = pygame.image.load('Snake/Graphics/tail_left.png').convert_alpha()
-
-            self.body_vertical = pygame.image.load('Snake/Graphics/body_vertical.png').convert_alpha()
-            self.body_horizontal = pygame.image.load('Snake/Graphics/body_horizontal.png').convert_alpha()
-
-            self.body_topright = pygame.image.load('Snake/Graphics/body_topright.png').convert_alpha()
-            self.body_topleft = pygame.image.load('Snake/Graphics/body_topleft.png').convert_alpha()
-            self.body_bottomright = pygame.image.load('Snake/Graphics/body_bottomright.png').convert_alpha()
-            self.body_bottomleft = pygame.image.load('Snake/Graphics/body_bottomleft.png').convert_alpha()
+            # Load and invert the image for the AI snake
+            image = pygame.image.load(f'Snake/Graphics/{path}.png').convert_alpha()
+            inverted_image = self.invert_image_colors(image)
+            setattr(self, f"{path}_ai", inverted_image)
 
         self.hit = pygame.mixer.Sound('Snake/hit.wav')
 
@@ -283,30 +250,19 @@ class MAIN:
     def draw_grass(self):
         # fruit_rect = pygame.Rect(self.pos.x * cell_size, self.pos.y * cell_size, cell_size, cell_size)
         # screen.blit(apple, fruit_rect)
-        grass_color = (167,209,61)
-        grass_olor = (17,29,161)
+        grass_color = (100,150,61)
         for row in range(cell_number):
             if row % 2 == 0:
                 for col in range(cell_number):
                     if col % 2 == 0:
                         grass_rect = pygame.Rect(col * cell_size,row * cell_size , cell_size,cell_size)
-                        screen.blit(grass, grass_rect)
+                        pygame.draw.rect(screen, grass_color, grass_rect)
             else:
                 for col in range(cell_number):
                     if col % 2 != 0:
                         grass_rect = pygame.Rect(col * cell_size,row * cell_size , cell_size,cell_size)
-                        screen.blit(grass, grass_rect)
+                        pygame.draw.rect(screen, grass_color, grass_rect)
             
-            if row % 2 != 0:
-                for col in range(cell_number):
-                    if col % 2 == 0:
-                        grass_rect = pygame.Rect(col * cell_size,row * cell_size , cell_size,cell_size)
-                        screen.blit(grass1, grass_rect)
-            else:
-                for col in range(cell_number):
-                    if col % 2 != 0:
-                        grass_rect = pygame.Rect(col * cell_size,row * cell_size , cell_size,cell_size)
-                        screen.blit(grass1, grass_rect)
     
     def draw_score(self):
         score_text = 'score: ' + str(len(self.snake.body) - 3)
@@ -317,7 +273,7 @@ class MAIN:
         apple_rect = apple.get_rect(midright = (score_rect.left, score_rect.centery))
         bg_rect = pygame.Rect(apple_rect.left,apple_rect.top , apple_rect.width+score_rect.width+6, apple_rect.height)
 
-        pygame.draw.rect(screen, (167,209,61), bg_rect)
+        pygame.draw.rect(screen, (7,109,61), bg_rect)
         screen.blit(score_surface, score_rect)
         screen.blit(apple, apple_rect)
         pygame.draw.rect(screen, (56,75,15), bg_rect, 2)
@@ -330,7 +286,7 @@ class MAIN:
         apple1_rect = apple.get_rect(midright = (computer_score_rect.left, computer_score_rect.centery))
         bg1_rect = pygame.Rect(apple1_rect.left,apple1_rect.top , apple1_rect.width+computer_score_rect.width+6, apple1_rect.height)
 
-        pygame.draw.rect(screen, (167,209,61), bg1_rect)
+        pygame.draw.rect(screen, (7,109,61), bg1_rect)
         screen.blit(computer_score_surface, computer_score_rect)
         screen.blit(apple, apple1_rect)
         pygame.draw.rect(screen, (56,75,15), bg1_rect, 2)
@@ -341,8 +297,11 @@ class MAIN:
         self.snake_ai.reset()  
 
 
+# Initialize Pygame
 pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
+
+# Constants
 cell_size = 40
 cell_number = 20
 screen = pygame.display.set_mode((cell_number * cell_size, cell_number * cell_size))
@@ -378,7 +337,7 @@ while True:
                 if main_game.snake.direction.x !=1:
                     main_game.snake.direction = Vector2(-1,0)
 
-    screen.fill((175, 215, 70))
+    screen.fill((50, 60, 70))
     main_game.draw_elements()
     pygame.display.update()
     clock.tick(60)  # fps
