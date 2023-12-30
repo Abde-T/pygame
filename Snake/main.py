@@ -1,6 +1,4 @@
-import pygame
-import sys
-import random
+import pygame, sys, random, asyncio
 from pygame.math import Vector2
 
 
@@ -33,14 +31,14 @@ class SNAKE:
 
         for path in paths:
             # Load the image for the player-controlled snake
-            setattr(self, path, pygame.image.load(f'Snake/Graphics/{path}.png').convert_alpha())
+            setattr(self, path, pygame.image.load(f'./Graphics/{path}.png').convert_alpha())
 
             # Load and invert the image for the AI snake
-            image = pygame.image.load(f'Snake/Graphics/{path}.png').convert_alpha()
+            image = pygame.image.load(f'./Graphics/{path}.png').convert_alpha()
             inverted_image = self.invert_image_colors(image)
             setattr(self, f"{path}_ai", inverted_image)
 
-        self.hit = pygame.mixer.Sound('Snake/hit.wav')
+        self.hit = pygame.mixer.Sound('./hit.wav')
 
     def draw_snake(self):
         self.update_head_graphics()
@@ -306,7 +304,7 @@ cell_size = 40
 cell_number = 20
 screen = pygame.display.set_mode((cell_number * cell_size, cell_number * cell_size))
 clock = pygame.time.Clock()
-apple = pygame.image.load('snake/Graphics/apple.png').convert_alpha()
+apple = pygame.image.load('./Graphics/apple.png').convert_alpha()
 game_font = pygame.font.Font(None,25)
 
 SCREEN_UPDATE = pygame.USEREVENT
@@ -314,28 +312,32 @@ pygame.time.set_timer(SCREEN_UPDATE, 150)
 
 main_game = MAIN()
 
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == SCREEN_UPDATE:
-            main_game.update()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                if main_game.snake.direction.y !=1:
-                    main_game.snake.direction = Vector2(0,-1)
-            if event.key == pygame.K_DOWN:
-                if main_game.snake.direction.y != -1:
-                    main_game.snake.direction = Vector2(0,1)
-            if event.key == pygame.K_RIGHT:
-                if main_game.snake.direction.x !=-1:
-                    main_game.snake.direction = Vector2(1,0)
-            if event.key == pygame.K_LEFT:
-                if main_game.snake.direction.x !=1:
-                    main_game.snake.direction = Vector2(-1,0)
+async def main():
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == SCREEN_UPDATE:
+                main_game.update()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    if main_game.snake.direction.y !=1:
+                        main_game.snake.direction = Vector2(0,-1)
+                if event.key == pygame.K_DOWN:
+                    if main_game.snake.direction.y != -1:
+                        main_game.snake.direction = Vector2(0,1)
+                if event.key == pygame.K_RIGHT:
+                    if main_game.snake.direction.x !=-1:
+                        main_game.snake.direction = Vector2(1,0)
+                if event.key == pygame.K_LEFT:
+                    if main_game.snake.direction.x !=1:
+                        main_game.snake.direction = Vector2(-1,0)
 
-    screen.fill((50, 60, 70))
-    main_game.draw_elements()
-    pygame.display.update()
-    clock.tick(60)  # fps
+        screen.fill((50, 60, 70))
+        main_game.draw_elements()
+        pygame.display.update()
+        clock.tick(60)  # fps
+        await asyncio.sleep(0)
+
+asyncio.run(main())
