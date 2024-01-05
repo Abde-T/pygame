@@ -248,18 +248,41 @@ class MAIN:
     def draw_grass(self):
         # fruit_rect = pygame.Rect(self.pos.x * cell_size, self.pos.y * cell_size, cell_size, cell_size)
         # screen.blit(apple, fruit_rect)
-        grass_color = (100,150,61)
+        grass_color = (10, 105, 50)
+        grass_color1 = (50, 120, 50)
         for row in range(cell_number):
             if row % 2 == 0:
                 for col in range(cell_number):
                     if col % 2 == 0:
                         grass_rect = pygame.Rect(col * cell_size,row * cell_size , cell_size,cell_size)
-                        pygame.draw.rect(screen, grass_color, grass_rect)
+                        screen.blit(grassy, grass_rect)
             else:
                 for col in range(cell_number):
                     if col % 2 != 0:
                         grass_rect = pygame.Rect(col * cell_size,row * cell_size , cell_size,cell_size)
-                        pygame.draw.rect(screen, grass_color, grass_rect)
+                        screen.blit(grassy, grass_rect)
+
+            if row % 2 != 0:
+                for col in range(cell_number):
+                    if col % 2 == 0:
+                        grass_rect = pygame.Rect(col * cell_size,row * cell_size , cell_size,cell_size)
+                        screen.blit(stone, grass_rect)
+            else:
+                for col in range(cell_number):
+                    if col % 2 != 0:
+                        grass_rect = pygame.Rect(col * cell_size,row * cell_size , cell_size,cell_size)
+                        screen.blit(stone, grass_rect)
+
+            if row % 2 == 0:
+                for col in range(cell_number):
+                    if col % 2 == 0:
+                        grass_rect = pygame.Rect(col * cell_size,row * cell_size , cell_size,cell_size)
+                        pygame.draw.rect(screen, grass_color1, grass_rect,2)
+            else:
+                for col in range(cell_number):
+                    if col % 2 != 0:
+                        grass_rect = pygame.Rect(col * cell_size,row * cell_size , cell_size,cell_size)
+                        pygame.draw.rect(screen, grass_color1, grass_rect,1)
             
     
     def draw_score(self):
@@ -305,6 +328,8 @@ cell_number = 20
 screen = pygame.display.set_mode((cell_number * cell_size, cell_number * cell_size))
 clock = pygame.time.Clock()
 apple = pygame.image.load('./Graphics/apple.png').convert_alpha()
+stone = pygame.image.load('./Graphics/stone.png').convert_alpha()
+grassy = pygame.image.load('./Graphics/grassy.png').convert_alpha()
 game_font = pygame.font.Font(None,25)
 
 SCREEN_UPDATE = pygame.USEREVENT
@@ -334,7 +359,7 @@ async def main():
                     if main_game.snake.direction.x !=1:
                         main_game.snake.direction = Vector2(-1,0)
 
-        screen.fill((50, 60, 70))
+        screen.fill((7,109,61))
         main_game.draw_elements()
         pygame.display.update()
         clock.tick(60)  # fps
